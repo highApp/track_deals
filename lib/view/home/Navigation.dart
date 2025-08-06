@@ -7,7 +7,9 @@ import 'package:trackdeal/view/home/Discussion.dart';
 import 'package:trackdeal/view/home/Profile.dart';
 import 'package:trackdeal/view/home/home_screen.dart';
 import 'package:trackdeal/view/home/messages.dart';
-import 'package:trackdeal/view/home/post.dart';
+import 'package:trackdeal/view/home/post_discussion/submit_discussion.dart';
+import 'package:trackdeal/view/post_a_coupon/submit_coupon1.dart';
+import 'package:trackdeal/view/post_a_deal/submit_deal_1.dart';
 
 
 class Navigation extends StatefulWidget {
@@ -63,36 +65,57 @@ class _NavigationState extends State<Navigation> {
                 ),
               ),
               SizedBox(height: 15),
-              Padding(
-                padding:EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    SvgPicture.asset('assets/svgIcons/18.svg'),
-                    SizedBox(width: 30..w,),
-                    Text2(text: 'Post a deal',)
-                  ],
+              GestureDetector(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SubmitDeal1(),));
+                },
+                child: Padding(
+                  padding:EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    child: Row(
+                      children: [
+                        SvgPicture.asset('assets/svgIcons/18.svg'),
+                        SizedBox(width: 30..w,),
+                        Text2(text: 'Post a deal',)
+                      ],
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 20..h,),
-              Padding(
-                padding:EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    SvgPicture.asset('assets/svgIcons/19.svg'),
-                    SizedBox(width: 30..w,),
-                    Text2(text: 'Post a coupon',)
-                  ],
+              GestureDetector(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SubmitCoupon1(),));
+                },
+                child: Padding(
+                  padding:EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    child: Row(
+                      children: [
+                        SvgPicture.asset('assets/svgIcons/19.svg'),
+                        SizedBox(width: 30..w,),
+                        Text2(text: 'Post a coupon',)
+                      ],
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 20..h,),
-              Padding(
-                padding:EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    SvgPicture.asset('assets/svgIcons/20.svg'),
-                    SizedBox(width: 30..w,),
-                    Text2(text: 'Post a discussion',)
-                  ],
+              GestureDetector(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SubmitDiscussion(),));
+                },
+                child: Padding(
+                  padding:EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    child: Row(
+                      children: [
+                        SvgPicture.asset('assets/svgIcons/20.svg'),
+                        SizedBox(width: 30..w,),
+                        Text2(text: 'Post a discussion',)
+                      ],
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 20..h,),

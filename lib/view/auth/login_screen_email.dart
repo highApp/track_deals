@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:trackdeal/constants/colors.dart';
 import 'package:trackdeal/customWidgets/custom_button.dart';
 import 'package:trackdeal/view/auth/otp.dart';
+
+import '../../contoller/authController/auth_contorller.dart';
 
 class LoginScreenEmail extends StatefulWidget {
   const LoginScreenEmail({super.key});
@@ -14,8 +18,10 @@ class LoginScreenEmail extends StatefulWidget {
 }
 
 class _LoginScreenEmailState extends State<LoginScreenEmail> {
-
+  late AuthController authCont;
   final FocusNode _usernameFocusNode = FocusNode();
+  final TextEditingController _emailController = TextEditingController();
+  String? _emailError;
 
   @override
   void initState() {
@@ -23,12 +29,60 @@ class _LoginScreenEmailState extends State<LoginScreenEmail> {
     _usernameFocusNode.addListener(() {
       setState(() {}); // Rebuild when focus changes
     });
+    
+    // Initialize AuthController if it doesn't exist
+    try {
+      authCont = Get.find<AuthController>();
+    } catch (e) {
+      // If AuthController doesn't exist, create it as a singleton
+      Get.lazyPut<AuthController>(() => AuthController(), fenix: true);
+      authCont = Get.find<AuthController>();
+    }
   }
 
   @override
   void dispose() {
     _usernameFocusNode.dispose();
+    _emailController.dispose();
     super.dispose();
+  }
+
+  // Email validation function
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+  // Handle next button click
+  void _handleNextButtonClick() {
+    final email = _emailController.text.trim();
+    
+    // Print email value
+    print('Email entered: $email');
+    
+    // Validate email
+    if (email.isEmpty) {
+      setState(() {
+        _emailError = 'Email is required';
+      });
+      return;
+    }
+    
+    if (!_isValidEmail(email)) {
+      setState(() {
+        _emailError = 'Please enter a valid email address';
+      });
+      return;
+    }
+    
+    // Clear any previous errors
+    setState(() {
+      _emailError = null;
+    });
+    
+    // Navigate to OTP screen with email parameter
+    //Get.to(() => OTP(email: email));
+    // Navigate to OTP screen
+    authCont.sendEmailOTPCode(email);
   }
 
   @override
@@ -86,6 +140,7 @@ class _LoginScreenEmailState extends State<LoginScreenEmail> {
                     setState(() {});
                   },
                   child: TextField(
+                    controller: _emailController,
                     focusNode: _usernameFocusNode,
                     cursorColor: AppColors.primaryColor,
                     decoration: InputDecoration(
@@ -94,22 +149,36 @@ class _LoginScreenEmailState extends State<LoginScreenEmail> {
                       labelStyle: TextStyle(
                         color: _usernameFocusNode.hasFocus ? AppColors.primaryColor : Color(0xFF6F6F6F),
                       ),
-
+                      errorText: _emailError,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide:  BorderSide(
-                          color: Color(0xFF6F6F6F),
+                        borderSide: BorderSide(
+                          color: _emailError != null ? Colors.red : Color(0xFF6F6F6F),
                           width: 1, // Border width
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide:  BorderSide(
-                          color: AppColors.primaryColor,
+                        borderSide: BorderSide(
+                          color: _emailError != null ? Colors.red : AppColors.primaryColor,
                           width: 1, // Border width on focus
                         ),
                       ),
-                      contentPadding:  EdgeInsets.symmetric(
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
                         horizontal: 20,
                         vertical: 10, // Field height control
                       ),
@@ -119,9 +188,7 @@ class _LoginScreenEmailState extends State<LoginScreenEmail> {
                 SizedBox(height: MediaQuery.of(context).size.height*.36,),
                 SizedBox(height: 20..h,),
                 GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => OTP(),));
-                    },
+                    onTap: _handleNextButtonClick,
                     child: Button1(text: 'Next'))
               ],
             ),

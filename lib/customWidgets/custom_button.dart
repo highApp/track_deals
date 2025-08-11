@@ -4,9 +4,12 @@ import 'package:trackdeal/constants/colors.dart';
 
 class Button1 extends StatelessWidget {
   final String text;
+  final bool isEnabled;
 
-  const Button1({super.key,
-   required this.text
+  const Button1({
+    super.key,
+    required this.text,
+    this.isEnabled = true,
   });
 
   @override
@@ -15,16 +18,17 @@ class Button1 extends StatelessWidget {
       height: 50..h,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        color: AppColors.primaryColor,
+        color: isEnabled ? AppColors.primaryColor : AppColors.primaryColor.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Center(
-        child: Text(text,
+        child: Text(
+          text,
           style: TextStyle(
-              color: AppColors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'PlusJakartaSans'
+            color: AppColors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'PlusJakartaSans'
           ),
           textAlign: TextAlign.center,
         ),

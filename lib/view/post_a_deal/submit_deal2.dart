@@ -153,7 +153,7 @@ class _SubmitDeal2State extends State<SubmitDeal2> {
           ? double.parse(_nextBestPriceController.text.trim()) 
           : null,
       'couponCode': _couponCodeController.text.trim(),
-      'availability': isOnlineSelected ? 'Online' : 'In-store',
+      'availability': isOnlineSelected ? 'online' : 'in-store',
       'location': _locationController.text.trim(),
       'shippingFrom': isOnlineSelected ? _shippingFromController.text.trim() : null,
     };
@@ -165,7 +165,7 @@ class _SubmitDeal2State extends State<SubmitDeal2> {
     print('Price: \$${dealData['price']}');
     print('Next Best Price: ${dealData['nextBestPrice'] != null ? '\$${dealData['nextBestPrice']}' : 'Not provided'}');
     print('Coupon Code: ${dealData['couponCode'].isNotEmpty ? dealData['couponCode'] : 'Not provided'}');
-    print('Availability: ${dealData['availability']}');
+    print('Availability: ${dealData['availability']} (${isOnlineSelected ? 'Online Deal' : 'In-Store Deal'})');
     print('Location: ${dealData['location']}');
     print('Shipping From: ${dealData['shippingFrom'] ?? 'Not applicable'}');
     print('=============================');

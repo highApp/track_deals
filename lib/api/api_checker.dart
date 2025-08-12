@@ -13,8 +13,15 @@ import '../utils/utils.dart';
 
 class ApiChecker {
   Future<Response> checkApi({required http.Response respons, bool showUserError = true, bool showSystemError = true}) async {
-    dynamic  response =Response(
-          body: jsonDecode(respons.body) ?? respons.body,
+    dynamic responseBody;
+    try {
+      responseBody = jsonDecode(respons.body);
+    } catch (e) {
+      responseBody = respons.body;
+    }
+    
+    dynamic response = Response(
+          body: responseBody,
           bodyString: respons.body.toString(),
           request: Request(
               headers: respons.request!.headers,
@@ -35,7 +42,11 @@ class ApiChecker {
     } else if (response.statusCode! == 401 || response.statusCode! == 403) {
       if (showUserError) {
         // Get.offAll(() =>  LoginPhone());
-         errorAlertToast(response.body['message']);
+        if (response.body is Map && response.body['message'] != null) {
+          errorAlertToast(response.body['message']);
+        } else {
+          errorAlertToast('Authentication failed');
+        }
      }
     } else if (response.statusCode! >= 500) {
       if (showSystemError) {
@@ -45,9 +56,22 @@ class ApiChecker {
       }
     } else if (response.statusCode! >= 400) {
       if (showUserError) {
-        errorAlertToast(response.body['message']);
+        if (response.body is Map && response.body['message'] != null) {
+          errorAlertToast(response.body['message']);
+        } else {
+          errorAlertToast('Request failed');
+        }
       }
     }
-    return Response(statusCode: response.statusCode, statusText: response.body);
+    
+    // Return the response with proper statusText
+    return Response(
+      statusCode: response.statusCode, 
+      statusText: response.statusText,
+      body: response.body,
+      bodyString: response.bodyString,
+      headers: response.headers,
+      request: response.request,
+    );
   }
 }

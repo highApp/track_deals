@@ -50,6 +50,7 @@ class _GetStartedState extends State<GetStarted> {
       if (userData != null) {
         setState(() {
           userName = userData!.firstName ?? userData!.email?.split('@')[0] ?? 'User';
+          print('ImageURL${userData!.profileImage}');
         });
       }
     } catch (e) {
@@ -140,7 +141,7 @@ class _GetStartedState extends State<GetStarted> {
               SizedBox(height: 10..h,),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30),
-                child: Text2(text: 'You are now a part of the app name community.',
+                child: Text2(text: 'You are now a part of the TrackDeals community.',
                 ),
               ),
               SizedBox(height: 10..h,),

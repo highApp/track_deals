@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -156,9 +158,23 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
       
       print('Debug: API Response status: ${response.statusCode}');
       print('Debug: API Response body: ${response.body}');
-      
+
       if (response.statusCode == 200) {
         // Success - update local user data
+        // Extract server image URL from response
+        String? serverImageUrl;
+        var data = jsonDecode(response.bodyString??"");
+        print('AuthController: Parsed response data: $data');
+
+        UserLoginData loginData = UserLoginData.fromJson(data);
+        serverImageUrl=loginData.profileImage;
+        // if (response.body != null && response.body['data'] != null) {
+        //   serverImageUrl = response.body['data']['profile_picture'] ??
+        //                   response.body['data']['profile_image'] ??
+        //                   response.body['profile_picture'] ??
+        //                   response.body['profile_image'];
+        // }
+        
         final updatedUser = UserLoginData(
           status: user.status,
           message: user.message,
@@ -168,12 +184,12 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          profileImage: selectedImage!.path, // For now, store local path
+          profileImage: serverImageUrl ?? user.profileImage, // Save server path if available, otherwise keep existing
           address: user.address,
           deviceToken: user.deviceToken,
           createdAt: user.createdAt,
         );
-        
+        print('imageURL save Link${user.profileImage}');
         // Save updated user data
         await SharedPrefsHelper.saveUserLoginData(updatedUser);
         

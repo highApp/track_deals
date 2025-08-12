@@ -12,7 +12,9 @@ import 'package:trackdeal/view/post_a_deal/submit_deal4.dart';
 import '../../customWidgets/custom_button.dart';
 
 class SubmitDeal3 extends StatefulWidget {
-  const SubmitDeal3({super.key});
+  final Map<String, dynamic> dealData;
+  
+  const SubmitDeal3({super.key, required this.dealData});
 
   @override
   State<SubmitDeal3> createState() => _SubmitDeal3State();
@@ -76,12 +78,73 @@ class _SubmitDeal3State extends State<SubmitDeal3> {
   }
 
   Future<void> pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        imagesList.add(File(pickedFile.path));
-      });
+    if (source == ImageSource.gallery) {
+      // For gallery, allow multiple image selection
+      final List<XFile> pickedFiles = await ImagePicker().pickMultiImage();
+      if (pickedFiles.isNotEmpty) {
+        setState(() {
+          for (var pickedFile in pickedFiles) {
+            if (imagesList.length < 8) { // Limit to 8 images
+              imagesList.add(File(pickedFile.path));
+            }
+          }
+        });
+      }
+    } else {
+      // For camera, single image selection
+      final pickedFile = await ImagePicker().pickImage(source: source);
+      if (pickedFile != null && imagesList.length < 8) {
+        setState(() {
+          imagesList.add(File(pickedFile.path));
+        });
+      }
     }
+  }
+
+  void removeImage(int index) {
+    setState(() {
+      imagesList.removeAt(index);
+    });
+  }
+
+  void _printAllValuesAndNavigate() {
+    // Validate images
+    if (imagesList.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please add at least one image for your deal'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+    
+    // Print all values including SubmitDeal1 and SubmitDeal2 data
+    print('=== SubmitDeal3 - All Form Data ===');
+    print('Deal Link: ${widget.dealData['dealLink']}');
+    print('Title: ${widget.dealData['title']}');
+    print('Price: \$${widget.dealData['price']}');
+    print('Next Best Price: ${widget.dealData['nextBestPrice'] != null ? '\$${widget.dealData['nextBestPrice']}' : 'Not provided'}');
+    print('Coupon Code: ${widget.dealData['couponCode'].isNotEmpty ? widget.dealData['couponCode'] : 'Not provided'}');
+    print('Availability: ${widget.dealData['availability']}');
+    print('Location: ${widget.dealData['location']}');
+    print('Shipping From: ${widget.dealData['shippingFrom'] ?? 'Not applicable'}');
+    print('Images Count: ${imagesList.length}');
+    print('===============================');
+
+    // Create updated deal data with images
+    Map<String, dynamic> updatedDealData = Map.from(widget.dealData);
+    updatedDealData['images'] = imagesList;
+
+    // Print data being passed to SubmitDeal4
+    print('=== SubmitDeal3 - Data being passed to SubmitDeal4 ===');
+    print('Images added: ${updatedDealData['images']?.length ?? 0}');
+    print('Total data keys: ${updatedDealData.keys.toList()}');
+    print('===============================');
+
+    // Navigate to SubmitDeal4 with all data
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SubmitDeal4(dealData: updatedDealData)));
   }
 
   @override
@@ -122,9 +185,7 @@ class _SubmitDeal3State extends State<SubmitDeal3> {
               ),
               SizedBox(width: 70..w,),
               GestureDetector(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SubmitDeal4(),));
-                },
+                onTap: _printAllValuesAndNavigate,
                 child: Container(
                   height: 45..h,
                   width: 130..w,
@@ -200,7 +261,7 @@ class _SubmitDeal3State extends State<SubmitDeal3> {
                             width: MediaQuery.of(context).size.width*.23,
                             height: 2..h,
                             decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(.1)
+                                color: AppColors.primaryColor
                             ),
                           ),
                           Container(
@@ -269,13 +330,69 @@ class _SubmitDeal3State extends State<SubmitDeal3> {
                   fontWeight: FontWeight.w700,
                   textAlign: TextAlign.start,
                 ),
-                Text2(text: 'Upload up to 8 images to publish your offer. you can drag and drop to reorder them and pick the cover images',
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text2(
+                        text: 'Upload up to 8 images to publish your offer. ',
+                        fontSize: 14..sp,
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                    Text2(
+                      text: '(${imagesList.length}/8)',
+                      fontSize: 14..sp,
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ],
+                ),
+                Text2(
+                  text: 'You can select multiple images from gallery and remove them by tapping the X button',
                   fontSize: 14..sp,
                   textAlign: TextAlign.start,
                 ),
                 SizedBox(height: 20..h,),
+                
+                // Display previous form data summary
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(15..w),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text2(
+                        text: 'Deal Summary',
+                        fontSize: 16..sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      SizedBox(height: 10..h),
+                      Text('Link: ${widget.dealData['dealLink']}', style: TextStyle(fontSize: 12..sp)),
+                      Text('Title: ${widget.dealData['title']}', style: TextStyle(fontSize: 12..sp)),
+                      Text('Price: \$${widget.dealData['price']}', style: TextStyle(fontSize: 12..sp)),
+                      widget.dealData['nextBestPrice'] != null
+                          ? Text('Next Best Price: \$${widget.dealData['nextBestPrice']}', style: TextStyle(fontSize: 12..sp))
+                          : SizedBox.shrink(),
+                                              widget.dealData['couponCode'].isNotEmpty
+                            ? Text('Coupon: ${widget.dealData['couponCode']}', style: TextStyle(fontSize: 12..sp))
+                            : SizedBox.shrink(),
+                      Text('Type: ${widget.dealData['availability']}', style: TextStyle(fontSize: 12..sp)),
+                      Text('Location: ${widget.dealData['location']}', style: TextStyle(fontSize: 12..sp)),
+                                              widget.dealData['shippingFrom'] != null
+                            ? Text('Shipping: ${widget.dealData['shippingFrom']}', style: TextStyle(fontSize: 12..sp))
+                            : SizedBox.shrink(),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20..h,),
+                
                 SizedBox(
-                  height: ((imagesList.length + 1) / 2).ceil() * 170..h, // Adjust height based on item count
+                  height: ((imagesList.length + (imagesList.length < 8 ? 1 : 0)) / 2).ceil() * 170..h, // Adjust height based on item count
                   child: GridView.builder(
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
@@ -286,10 +403,10 @@ class _SubmitDeal3State extends State<SubmitDeal3> {
                       mainAxisSpacing: 10,
                       childAspectRatio: 1,
                     ),
-                    itemCount: imagesList.length + 1, // Extra one for camera icon
+                    itemCount: imagesList.length + (imagesList.length < 8 ? 1 : 0), // Extra one for camera icon only if space available
                     itemBuilder: (context, index) {
-                      if (index == 0) {
-                        // First item = camera icon
+                      if (index == 0 && imagesList.length < 8) {
+                        // First item = camera icon (only show if space available)
                         return GestureDetector(
                           onTap: imagePickerOption,
                           child: Container(
@@ -311,22 +428,66 @@ class _SubmitDeal3State extends State<SubmitDeal3> {
                           ),
                         );
                       } else {
-                        final image = imagesList[index - 1];
-                        return Container(
-                          height: 160..h,
-                          width: 160..w,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: FileImage(image),
-                              fit: BoxFit.cover,
+                        final image = imagesList[index - (imagesList.length < 8 ? 1 : 0)];
+                        return Stack(
+                          children: [
+                            Container(
+                              height: 160..h,
+                              width: 160..w,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: FileImage(image),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                          ),
+                            Positioned(
+                              top: 5..h,
+                              right: 5..w,
+                              child: GestureDetector(
+                                onTap: () => removeImage(index - (imagesList.length < 8 ? 1 : 0)),
+                                child: Container(
+                                  padding: EdgeInsets.all(5..w),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withOpacity(0.7),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(Icons.close, color: Colors.white, size: 18..sp),
+                                ),
+                              ),
+                            ),
+                          ],
                         );
                       }
                     },
                   ),
                 ),
+                
+                // Show message when max images reached
+                if (imagesList.length >= 8)
+                  Padding(
+                    padding: EdgeInsets.only(top: 10..h),
+                    child: Text2(
+                      text: 'Maximum 8 images reached. Remove some images to add more.',
+                      fontSize: 12..sp,
+                      color: Colors.orange,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                
+                // Show message when no images selected
+                if (imagesList.isEmpty)
+                  Padding(
+                    padding: EdgeInsets.only(top: 10..h),
+                    child: Text2(
+                      text: '⚠️ Please add at least one image for your deal',
+                      fontSize: 12..sp,
+                      color: Colors.red,
+                      textAlign: TextAlign.center,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
               ],
             ),
           ),

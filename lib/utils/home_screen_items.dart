@@ -4,9 +4,12 @@ import 'package:flutter_svg/svg.dart';
 
 import '../constants/colors.dart';
 import '../customWidgets/customText.dart';
+import '../contoller/homeController/home_data_model.dart';
 
 class HomeScreenItems extends StatefulWidget {
-  const HomeScreenItems({super.key});
+  final Deals? deal;
+  
+  const HomeScreenItems({super.key, this.deal});
 
   @override
   State<HomeScreenItems> createState() => _HomeScreenItemsState();
@@ -15,6 +18,8 @@ class HomeScreenItems extends StatefulWidget {
 class _HomeScreenItemsState extends State<HomeScreenItems> {
   @override
   Widget build(BuildContext context) {
+    final deal = widget.deal;
+    
     return Container(
       height: 260..h,
       width: MediaQuery.of(context).size.width,
@@ -36,8 +41,11 @@ class _HomeScreenItemsState extends State<HomeScreenItems> {
                 height: 170..h,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage('assets/images/image1.png'),
-                        fit: BoxFit.cover
+                    image: DecorationImage(
+                      image: deal?.images != null && deal!.images!.isNotEmpty
+                          ? NetworkImage(deal.images!.first)
+                          : AssetImage('assets/images/image1.png') as ImageProvider,
+                      fit: BoxFit.cover,
                     ),
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10))
                 ),
@@ -61,7 +69,7 @@ class _HomeScreenItemsState extends State<HomeScreenItems> {
                     children: [
                       SvgPicture.asset('assets/svgIcons/blue.svg'),
                       SizedBox(width: 10..w,),
-                      Text1(text: '2°',
+                      Text1(text: '${deal?.likes ?? 0}°',
                         color: Color(0xFF2664EB),
                       ),
                       SizedBox(width: 10..w,),
@@ -85,49 +93,49 @@ class _HomeScreenItemsState extends State<HomeScreenItems> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text1(text: '5 free Calming chews for pets',
-                          fontSize: 14..sp,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text1(text: '\$125',
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            deal?.title ?? 'No Title',
+                            style: TextStyle(
+                              color: AppColors.black,
                               fontSize: 14..sp,
-                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'PlusJakartaSans',
                             ),
-                            SizedBox(width: 5..w,),
-                            Stack(
-                              children: [
-                                SizedBox(
-                                  child: Text2(text: '\$250',
-                                    color: AppColors.black.withOpacity(.6),
-                                    fontSize: 11..sp,
-                                  ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 4..h),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (deal?.discountPrice != null && deal!.discountPrice!.isNotEmpty)
+                                Text1(
+                                  text: '\$${deal.discountPrice}',
+                                  fontSize: 14..sp,
+                                  color: AppColors.primaryColor,
                                 ),
-                                Positioned(
-                                  top: 8,
-                                  child: Container(
-                                    height: 1..h,
-                                    width: 30..w,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.black.withOpacity(.6),
+                              if (deal?.price != null && deal!.price!.isNotEmpty)
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8..w),
+                                  child: Text(
+                                    '\$${deal.price}',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12..sp,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'PlusJakartaSans',
+                                      decoration: TextDecoration.lineThrough,
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
-                            SizedBox(width: 10..w,),
-                            SvgPicture.asset('assets/svgIcons/truck.svg'),
-                            Text2(text: '\$10',
-                              fontSize: 10..sp,
-                              color: AppColors.black.withOpacity(.6),
-                            )
-                          ],
-                        )
-                      ],
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     Container(
                       padding: EdgeInsets.all(15),
@@ -159,10 +167,19 @@ class _HomeScreenItemsState extends State<HomeScreenItems> {
                           width: 15..w,
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              image: DecorationImage(image: AssetImage('assets/images/image3.png'))
+                              image: DecorationImage(
+                                image: deal?.user?.profileImage != null && deal!.user!.profileImage!.isNotEmpty
+                                    ? NetworkImage(deal.user!.profileImage!)
+                                    : AssetImage('assets/images/image3.png') as ImageProvider,
+                                fit: BoxFit.cover,
+                              )
                           ),
                         ),
-                        Text1(text: 'Posted by william jhonshon',
+                        SizedBox(width: 5..w),
+                        Text1(
+                          text: deal?.user != null 
+                              ? 'Posted by ${deal!.user!.firstName ?? ''} ${deal.user!.lastName ?? ''}'
+                              : 'Posted by Unknown',
                           color: AppColors.black.withOpacity(.6),
                           fontSize: 10..sp,
                         )
@@ -171,15 +188,24 @@ class _HomeScreenItemsState extends State<HomeScreenItems> {
                     Row(
                       children: [
                         SvgPicture.asset('assets/svgIcons/mm.svg'),
-                        Text1(text: '10',
+                        Text1(
+                          text: '${deal?.commentsCount ?? 0}',
                           color: Color(0xFF666666),
                           fontSize: 10..sp,
                         ),
                         SizedBox(width: 10..w,),
-                        Text1(text: 'Posted 6h ago',
-                          color: AppColors.black.withOpacity(.4),
-                          fontSize: 10..sp,
-                        )
+                        if (deal?.location != null && deal!.location!.isNotEmpty)
+                          Text1(
+                            text: deal.location!,
+                            color: AppColors.black.withOpacity(.4),
+                            fontSize: 10..sp,
+                          )
+                        else
+                          Text1(
+                            text: 'Location N/A',
+                            color: AppColors.black.withOpacity(.4),
+                            fontSize: 10..sp,
+                          )
                       ],
                     )
                   ],

@@ -5,6 +5,8 @@ import 'package:trackdeal/constants/colors.dart' show AppColors;
 import 'package:trackdeal/customWidgets/customText.dart';
 import 'package:trackdeal/view/home/categories.dart';
 
+import '../view/subscription/subscription.dart';
+
 class DrawerCustom extends StatelessWidget {
   const DrawerCustom({super.key});
 
@@ -70,6 +72,28 @@ class DrawerCustom extends StatelessWidget {
                   color: AppColors.black.withOpacity(.5),
                 )
               ],
+            ),
+          ),
+          SizedBox(height: 20..h,),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: GestureDetector(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Subscription(),));
+              },
+              child: Row(
+                children: [
+                  SvgPicture.asset('assets/svgIcons/subs.svg',
+                    height: 20..h,
+                    width: 20..w,
+                  ),
+                  SizedBox(width: 10..w,),
+                  Text2(text: 'Subscription',
+                    fontSize: 14,
+                    color: AppColors.black.withOpacity(.5),
+                  )
+                ],
+              ),
             ),
           ),
           SizedBox(height: 20..h,),

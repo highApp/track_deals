@@ -126,7 +126,7 @@ class _Splash2State extends State<Splash2> {
                   ),
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => SignIn(),));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreenEmail(),));
                     },
                     child: Text1(text: 'SignIn',
                     color: AppColors.primaryColor,),

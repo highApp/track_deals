@@ -11,6 +11,12 @@ class UserLoginData {
   String? address;
   String? deviceToken;
   String? createdAt;
+  int? totalDeals;
+  int? totalCoupons;
+  int? totalDiscussions;
+  int? totalComments;
+  int? totalLikesGiven;
+  int? totalDislikesGiven;
 
   UserLoginData(
       {this.status,
@@ -24,7 +30,13 @@ class UserLoginData {
         this.profileImage,
         this.address,
         this.deviceToken,
-        this.createdAt});
+        this.createdAt,
+        this.totalDeals,
+        this.totalCoupons,
+        this.totalDiscussions,
+        this.totalComments,
+        this.totalLikesGiven,
+        this.totalDislikesGiven});
 
   UserLoginData.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -39,6 +51,12 @@ class UserLoginData {
     address = json['address'];
     deviceToken = json['device_token'];
     createdAt = json['created_at'];
+    totalDeals = json['total_deals'];
+    totalCoupons = json['total_coupons'];
+    totalDiscussions = json['total_discussions'];
+    totalComments = json['total_comments'];
+    totalLikesGiven = json['total_likes_given'];
+    totalDislikesGiven = json['total_dislikes_given'];
   }
 
   Map<String, dynamic> toJson() {
@@ -55,6 +73,12 @@ class UserLoginData {
     data['address'] = this.address;
     data['device_token'] = this.deviceToken;
     data['created_at'] = this.createdAt;
+    data['total_deals'] = this.totalDeals;
+    data['total_coupons'] = this.totalCoupons;
+    data['total_discussions'] = this.totalDiscussions;
+    data['total_comments'] = this.totalComments;
+    data['total_likes_given'] = this.totalLikesGiven;
+    data['total_dislikes_given'] = this.totalDislikesGiven;
     return data;
   }
 }

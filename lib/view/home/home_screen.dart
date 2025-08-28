@@ -43,13 +43,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         children: [
                           GestureDetector(
-                            onTap: (){
-                              _scaffoldKey.currentState?.openDrawer();
-                            },
+                              onTap: (){
+                                _scaffoldKey.currentState?.openDrawer();
+                              },
                               child: SvgPicture.asset('assets/svgIcons/drawer.svg')),
                           SizedBox(width: 15..w,),
                           Text1(text: 'Deals',
-                          fontSize: 20..sp,
+                            fontSize: 20..sp,
                           )
                         ],
                       ),
@@ -110,14 +110,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: 3,
                     itemBuilder: (context,index)=>
-                    GestureDetector(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(),));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 15),
-                          child: HomeScreenItems(),
-                        )),
+                        GestureDetector(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(),));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 15),
+                              child: HomeScreenItems(),
+                            )),
 
                   ),
                 ),
